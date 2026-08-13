@@ -12,13 +12,13 @@ pipeline {
 
         stage('Maven Test') {
             steps {
-                sh 'mvn clean test'
+                sh '/opt/homebrew/bin/mvn clean test'
             }
         }
 
         stage('Maven Package') {
             steps {
-                sh 'mvn package -DskipTests'
+                sh '/opt/homebrew/bin/mvn package -DskipTests'
             }
         }
 
@@ -48,4 +48,4 @@ pipeline {
             }
         }
     }
-}
+}}
