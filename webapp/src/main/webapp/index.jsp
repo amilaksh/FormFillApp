@@ -36,8 +36,8 @@
     <label for="brother"><b>Brother Name</b></label>
     <input type="text" placeholder="Brother Name" name="brother" id="brother" required>
     <br>
-    <label for="sister"><b>Sister Name</b></label>
-    <input type="text" placeholder="sister Name" name="sister" id="sister" required>
+    <label for="sisterji"><b>Sisterji Name</b></label>
+    <input type="text" placeholder="sisterji Name" name="sisterji" id="sisterji" required>
     <br>
 
     <p>By creating an account you agree to our <a href="#">Terms & Privacy</a>.</p>
