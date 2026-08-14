@@ -29,17 +29,17 @@ pipeline {
             }
         }
 
-            stage('SonarQube Analysis') {
-        steps {
-            withSonarQubeEnv('SonarQube') {
-                sh '''
-                    /opt/homebrew/bin/mvn \
-                      org.sonarsource.scanner.maven:sonar-maven-plugin:5.7.0.6970:sonar \
-                      -Dsonar.projectKey=FormFillApp
-                '''
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh '''
+                        /opt/homebrew/bin/mvn \
+                          org.sonarsource.scanner.maven:sonar-maven-plugin:5.7.0.6970:sonar \
+                          -Dsonar.projectKey=FormFillApp
+                    '''
+                }
             }
         }
-    }
 
         stage('Quality Gate') {
             steps {
@@ -78,4 +78,23 @@ pipeline {
             }
         }
     }
+
+    post {
+        success {
+            emailext(
+                subject: "SonarQube Report - FormFillApp",
+                body: """SonarQube Quality Gate PASSED.
+Dashboard: http://localhost:9000/dashboard?id=FormFillApp""",
+                to: "amiteshranjan@outlook.com"
+            )
+        }
+        failure {
+            emailext(
+                subject: "SonarQube Report - FormFillApp",
+                body: "Pipeline failed. Please check Jenkins logs.",
+                to: "amiteshranjan@outlook.com"
+            )
+        }
+    }
 }
+
