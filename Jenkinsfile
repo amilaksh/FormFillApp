@@ -95,11 +95,4 @@ Dashboard: http://localhost:9000/dashboard?id=FormFillApp""",
         }
         failure {
             emailext(
-                subject: "SonarQube Report - FormFillApp",
-                body: "Pipeline failed. Please check Jenkins logs.",
-                to: "amiteshranjan@outlook.com"
-            )
-        }
-    }
-}
-
+                subject: "SonarQube Report - Form
