@@ -7,6 +7,10 @@ pipeline {
 
     environment {
         PATH = "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+        DOCKERHUB_USER = "amilaksh"
+        DOCKER_IMAGE = "${DOCKERHUB_USER}/formfillapp:latest"
+        AWS_REGION = "ap-south-1"
+        EKS_CLUSTER = "formfillapp-cluster"
     }
 
     stages {
@@ -55,39 +59,31 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
+        stage('Docker Build & Push') {
             steps {
                 sh '''
-                    which docker
-                    docker --version
-
-                    # Remove old image if exists
-                    docker rmi formfillapp:latest || true
-
-                    # Build new image with fixed tag
-                    docker build -t formfillapp:latest .
+                    docker buildx create --use || true
+                    docker buildx build --platform linux/amd64,linux/arm64 \
+                      -t $DOCKER_IMAGE --push .
                 '''
             }
         }
 
-        stage('Docker Deploy') {
+        stage('Deploy to EKS') {
             steps {
-                sh '''
-                    docker stop formfillapp-container || true
-                    docker rm formfillapp-container || true
-                    docker run -d \
-                      --name formfillapp-container \
-                      -p 8081:8080 \
-                      formfillapp:latest
-                '''
+                withAWS(region: "${AWS_REGION}", credentials: 'aws-creds') {
+                    sh '''
+                    aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER
+                    kubectl apply -f deployment.yml
+                    '''
+                }
             }
         }
     }
 
     post {
         always {
-            // Cleanup dangling images
-            sh 'docker image prune -f'
+            sh 'docker image prune -f || true'
         }
         success {
             emailext(
