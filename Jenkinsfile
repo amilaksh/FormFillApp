@@ -71,7 +71,7 @@ pipeline {
 
         stage('Deploy to EKS') {
             steps {
-                withAWS(region: "${AWS_REGION}", credentials: 'aws-creds') {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
                     sh '''
                     aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER
                     kubectl apply -f deployment.yml
@@ -97,9 +97,4 @@ Dashboard: http://localhost:9000/dashboard?id=FormFillApp""",
             emailext(
                 subject: "SonarQube Report - FormFillApp",
                 body: "Pipeline failed. Please check Jenkins logs.",
-                to: "amiteshranjan@outlook.com"
-            )
-        }
-    }
-}
 
