@@ -87,12 +87,19 @@ pipeline {
         }
         success {
             emailext(
-                subject: "SonarQube Report - FormFillApp",
-                body: """SonarQube Quality Gate PASSED.
-Dashboard: http://localhost:9000/dashboard?id=FormFillApp""",
-                to: "amiteshranjan@outlook.com"
+                subject: 'SonarQube Report - FormFillApp',
+                body: '''SonarQube Quality Gate PASSED.
+Dashboard: http://localhost:9000/dashboard?id=FormFillApp''',
+                to: 'amiteshranjan@outlook.com'
             )
         }
         failure {
             emailext(
-                subject: "SonarQube Report - Form
+                subject: 'SonarQube Report - FormFillApp',
+                body: 'Pipeline failed. Please check Jenkins logs.',
+                to: 'amiteshranjan@outlook.com'
+            )
+        }
+    }
+}
+
