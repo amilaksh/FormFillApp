@@ -60,7 +60,12 @@ pipeline {
                 sh '''
                     which docker
                     docker --version
-                    docker build -t formfillapp:${BUILD_NUMBER} .
+
+                    # Remove old image if exists
+                    docker rmi formfillapp:latest || true
+
+                    # Build new image with fixed tag
+                    docker build -t formfillapp:latest .
                 '''
             }
         }
@@ -73,13 +78,17 @@ pipeline {
                     docker run -d \
                       --name formfillapp-container \
                       -p 8081:8080 \
-                      formfillapp:${BUILD_NUMBER}
+                      formfillapp:latest
                 '''
             }
         }
     }
 
     post {
+        always {
+            // Cleanup dangling images
+            sh 'docker image prune -f'
+        }
         success {
             emailext(
                 subject: "SonarQube Report - FormFillApp",
